@@ -1,0 +1,22 @@
+Package: TextInfo
+Type: Package
+Title: Functions for extracting information from text
+Version: 1.0.0
+Date: 2015-04-12
+Author: Jared P. Lander
+Depends:
+	MITIE
+Imports:
+    dplyr,
+    magrittr,
+    useful,
+    networkD3
+Maintainer: Jared P. Lander <packages@jaredlander.com>
+Description: Functions for extracting information from text
+License: BSD_3_clause + file LICENSE
+LazyLoad: yes
+ByteCompile: TRUE
+Packaged: 2015-03-25 05:16:05 UTC; Jared
+Enhances: MITIE
+Suggests:
+    testthat
