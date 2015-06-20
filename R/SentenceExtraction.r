@@ -11,12 +11,10 @@
 #' @return A tbl with one row per entity found in the sentence
 #' @examples 
 #' \dontrun{
-#' ner_model_path <- "mitie/MITIE-models/english/ner_model.dat"
+#' ner_model_path <- "tests/data/ner_model.dat"
 #' ner <- NamedEntityExtractor$new(ner_model_path)
-#' textFiles <- file.path('data', 'NYTimes', dir('data/NYTimes/'))
-#' thisText <- readLines(textFiles[1])
-#' sentences <- sent_detect(thisText)
-#' extractSentenceInfo(sentences[1], nerModel=ner)
+#' theText <- "A network of new super PACs said Wednesday that it had raised $31 million to support Senator Ted Cruz's presidential campaign, a sum that could upend expectations in the race for the Republican nomination and rewrite the political rule book for outside spending"
+#' extractSentenceInfo(theText, nerModel=ner)
 #' }
 #' 
 extractSentenceInfo <- function(sentence, nerModel)
