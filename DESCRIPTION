@@ -12,11 +12,10 @@ Imports:
     useful,
     networkD3
 Maintainer: Jared P. Lander <packages@jaredlander.com>
-Description: Functions for extracting information from text
+Description: Functions for extracting information from text and storing in an edgelist format.
 License: BSD_3_clause + file LICENSE
 LazyLoad: yes
 ByteCompile: TRUE
 Packaged: 2015-03-25 05:16:05 UTC; Jared
-Enhances: MITIE
 Suggests:
     testthat
