@@ -9,7 +9,7 @@ convertToNodeLink(data, vertices)
 \arguments{
 \item{data}{Edgelist}
 
-\item{Character}{vector specifying the columns used to denote vertices}
+\item{vertices}{Character vector specifying the columns used to denote vertices}
 }
 \value{
 A list with the nodes data.frame and links data.frame

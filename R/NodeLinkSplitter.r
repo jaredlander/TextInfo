@@ -5,9 +5,9 @@
 #' @aliases convertToNodeLink
 #' @export convertToNodeLink
 #' @importFrom magrittr "%>%" "%<>%"
-#' @importFrom dplyr select distinct arrange mutate ungroup left_join rename
+#' @importFrom dplyr select select_ distinct arrange mutate ungroup left_join rename
 #' @param data Edgelist
-#' @param Character vector specifying the columns used to denote vertices
+#' @param vertices Character vector specifying the columns used to denote vertices
 #' @return A list with the nodes data.frame and links data.frame
 #' @examples 
 #' \dontrun{
@@ -17,7 +17,7 @@
 convertToNodeLink <- function(data, vertices)
 {
     # build a df of nodes
-    nodeDF <- stack(data, select=vertices) %>% select(values) %>% distinct %>% arrange(values) %>% 
+    nodeDF <- stack(data, select=vertices) %>% select_('values') %>% distinct %>% arrange(values) %>% 
         mutate(Index=seq(from=0, to=n()-1, by=1))
     
     # create the join associations
