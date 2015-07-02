@@ -18,6 +18,8 @@ Package for extracting entity information from text documents using [MITIE](http
 
 Some functions here are taken directly from the [`qdap`](https://github.com/trinker/qdap) package.  This was done, rather than using that package as a DEPENDS, because it depends on [`openNLP`](http://cran.r-project.org/web/packages/openNLP/index.html) which depends on [`rJava`](http://cran.r-project.org/web/packages/rJava/index.html), a requirement we aim to avoid.
 
+This is no longer the case as those functions were moved to a stripped down [qdaplite](https://github.com/jaredlander/qdaplite).  The above paragraph will be deleted soon.
+
 A number of examples call for a MITIE ner model.  This was too big to store in this repo so please download from http://sourceforge.net/projects/mitie/files/binaries/MITIE-models-v0.2.tar.bz2.
 
 To install first install MITIE following the instructions at https://github.com/mit-nlp/MITIE/tree/master/tools/R-binding.
