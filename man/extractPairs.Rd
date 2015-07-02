@@ -9,7 +9,7 @@ extractPairs(x, nerModel, ...)
 \arguments{
 \item{x}{Either a character vector with names of files or a tbl or database source holding the text.  In the latter cases the text is assumed to be in a column named Text and the grouping variable is assumed to be named File.}
 
-\item{A}{ner model supplied by MITIE}
+\item{ner}{A ner model supplied by MITIE}
 
 \item{\dots}{Further arguments}
 }

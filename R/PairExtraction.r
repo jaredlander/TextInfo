@@ -8,7 +8,7 @@
 #' @importFrom dplyr data_frame group_by do rename
 #' @importFrom useful reclass
 #' @param x Either a character vector with names of files or a tbl or database source holding the text.  In the latter cases the text is assumed to be in a column named Text and the grouping variable is assumed to be named File.
-#' @param A ner model supplied by MITIE
+#' @param ner A ner model supplied by MITIE
 #' @param \dots Further arguments
 #' @return A tbl listing entity cooccurences along with the file name and the sentence number.
 #' @examples 
@@ -31,6 +31,7 @@ extractPairs <- function(x, nerModel, ...)
 
 #' @title extractPairs.character
 #' @export extractPairs.character
+#' @export
 #' @rdname extract.Pairs
 extractPairs.character <- function(x, nerModel, ...)
 {
@@ -47,6 +48,7 @@ extractPairs.character <- function(x, nerModel, ...)
 #for both data.base stored and tbl stored ' @title extractPairs.tbl ' @export extractPairs.tbl ' @rdname extract.Pairs
 #' @title extractPairs.tbl
 #' @export extractPairs.tbl
+#' @export
 #' @rdname extract.Pairs
 #' @importFrom useful moveToFront
 extractPairs.tbl <- function(x, nerModel, ...)
