@@ -13,10 +13,10 @@ getSentencesFromText(text)
 A data.frame with one row per sentence detected
 }
 \description{
-Given text, this extracts all the sentences based on \code{\link{sent_detect}}.
+Given text, this extracts all the sentences based on \code{\link[qdaplite]{sent_detect}}.
 }
 \details{
-Given text, this extracts all the sentences based on \code{\link{sent_detect}}.
+Given text, this extracts all the sentences based on \code{\link[qdaplite]{sent_detect}}.
 }
 \examples{
 getSentencesFromText(c('This is one sentence in a single element.', 'This element will hold multiple sentences. This is the second. And this is the third and last.'))

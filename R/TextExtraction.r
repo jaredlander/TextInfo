@@ -40,13 +40,14 @@ extractTextInfo <- function(text, nerModel)
 }
 
 #' @title getSentencesFromText
-#' @description Given text, this extracts all the sentences based on \code{\link{sent_detect}}.
-#' @details Given text, this extracts all the sentences based on \code{\link{sent_detect}}.
+#' @description Given text, this extracts all the sentences based on \code{\link[qdaplite]{sent_detect}}.
+#' @details Given text, this extracts all the sentences based on \code{\link[qdaplite]{sent_detect}}.
 #' @export getSentencesFromText
 #' @aliases getSentencesFromText
 #' @author Jared P. Lander
 #' @importFrom dplyr data_frame mutate n as.tbl
 #' @importFrom magrittr "%>%"
+#' @importFrom qdaplite sent_detect
 #' @param text Text to be split into sentences
 #' @return A data.frame with one row per sentence detected
 #' @examples 

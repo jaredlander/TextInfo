@@ -10,7 +10,8 @@ Imports:
     dplyr,
     magrittr,
     useful,
-    networkD3
+    networkD3,
+    qdaplite
 Maintainer: Jared P. Lander <packages@jaredlander.com>
 Description: Functions for extracting information from text and storing in an edgelist format.
 License: BSD_3_clause + file LICENSE
