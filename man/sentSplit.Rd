@@ -5,7 +5,6 @@
 \alias{sentCombine}
 \alias{sentSplit}
 \alias{sent_detect}
-\alias{sent_detect_nlp}
 \title{Sentence Splitting}
 \usage{
 sentSplit(dataframe, text.var, rm.var = NULL, endmarks = c("?", ".", "!",
@@ -18,8 +17,6 @@ TOT(tot)
 
 sent_detect(text.var, endmarks = c("?", ".", "!", "|"),
   incomplete.sub = TRUE, rm.bracket = TRUE, ...)
-
-sent_detect_nlp(text.var, ...)
 }
 \arguments{
 \item{dataframe}{A dataframe that contains the person and text variable.}
@@ -71,9 +68,6 @@ sentence sub indexing (e.g. 3.2 become 3).
 
 \code{sent_detect} - returns a character vector of sentences split on
 endmark.
-
-\code{sent_detect} - returns a character vector of sentences split on
-endmark.
 }
 \description{
 \code{sentSplit} - Splits turns of talk into individual sentences (provided
@@ -86,10 +80,6 @@ data read in and cleaning process.
 turn of talk index (no sub sentence).  Generally, for internal use.
 
 \code{sent_detect} - Detect and split sentences on endmark boundaries.
-
-\code{sent_detect_nlp} - Detect and split sentences on endmark boundaries
-using \pkg{openNLP} & \pkg{NLP} utilities which matches the onld version of
-the \pkg{openNLP} package's now removed \code{sentDetect} function.
 }
 \section{Warning}{
  \code{\link[qdap]{sentSplit}} requires the dialogue (text)

@@ -390,26 +390,26 @@ sent_detect <- function(text.var, endmarks = c("?", ".", "!", "|"),
     out
 }
 
-#' Sentence Splitting
-#' 
-#' \code{sent_detect_nlp} - Detect and split sentences on endmark boundaries 
-#' using \pkg{openNLP} & \pkg{NLP} utilities which matches the onld version of
-#' the \pkg{openNLP} package's now removed \code{sentDetect} function.
-#' 
-#' @return \code{sent_detect} - returns a character vector of sentences split on
-#' endmark.
-#' @rdname sentSplit
-#' @export
-sent_detect_nlp <- function(text.var, ...){
-    
-    sent_token_annotator <- openNLP::Maxent_Sent_Token_Annotator(...)
-    unlist(lapply(text.var, function(x) {
-        if (is.na(x)) return(NA)
-        tv <- NLP::as.String(unbag(x))
-        out <- NLP::annotate(tv, sent_token_annotator)
-        tv[out]
-    }))
-}
+# #' Sentence Splitting
+# #' 
+# #' \code{sent_detect_nlp} - Detect and split sentences on endmark boundaries 
+# #' using \pkg{openNLP} & \pkg{NLP} utilities which matches the onld version of
+# #' the \pkg{openNLP} package's now removed \code{sentDetect} function.
+# #' 
+# #' @return \code{sent_detect} - returns a character vector of sentences split on
+# #' endmark.
+# #' @rdname sentSplit
+# #' @export
+# sent_detect_nlp <- function(text.var, ...){
+#     
+#     sent_token_annotator <- openNLP::Maxent_Sent_Token_Annotator(...)
+#     unlist(lapply(text.var, function(x) {
+#         if (is.na(x)) return(NA)
+#         tv <- NLP::as.String(unbag(x))
+#         out <- NLP::annotate(tv, sent_token_annotator)
+#         tv[out]
+#     }))
+# }
 
 
 # myText <- c('This first line is a complete sentence.', 'This second line starts a sentence', 'that is finished on the third line', 'The fourth line contains a first sentence.  And a fifth sentence.', 'The fifth line contains a whole sentence.  Then starts another', 'and concludes in the sixth line.')
