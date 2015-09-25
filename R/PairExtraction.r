@@ -39,7 +39,7 @@ extractPairs.character <- function(x, nerModel, ...)
     result <- data_frame(File=x)
     # read into a tbl
     result %<>% group_by(File) %>% 
-        do(data_frame(paste(readLines(.$File), collapse=''))) 
+        do(data_frame(Text=paste(readLines(.$File), collapse=''))) 
     
     # call extractPairs to run the code in extractPairs.tbl
     extractPairs(result, nerModel, ...)
@@ -50,13 +50,15 @@ extractPairs.character <- function(x, nerModel, ...)
 #' @export extractPairs.tbl
 #' @export
 #' @rdname extract.Pairs
-#' @importFrom useful moveToFront
-extractPairs.tbl <- function(x, nerModel, ...)
+#' @importFrom useful moveToFront subVector
+extractPairs.tbl <- function(x, nerModel, toSub, ...)
 {
     x %>% 
         # group by the file
         group_by(File) %>% 
-        # do the pair extraction
+        # replace special characters with their alternate meanings
+        mutate(Text=subVector(Text, toSub=toSub)) %>%
+        # do the pair extraction for each sentence in each file
         do(extractTextInfo(text=., nerModel=nerModel)) %>%
         # rename Number to SentenceNumber
         rename(SentenceNumber=Number) %>%
