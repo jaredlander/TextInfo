@@ -8,7 +8,7 @@
 #' @importFrom dplyr data_frame group_by do rename
 #' @importFrom useful reclass
 #' @param x Either a character vector with names of files or a tbl or database source holding the text.  In the latter cases the text is assumed to be in a column named Text and the grouping variable is assumed to be named File.
-#' @param ner A ner model supplied by MITIE
+#' @param nerModel A ner model supplied by MITIE
 #' @param \dots Further arguments
 #' @return A tbl listing entity cooccurences along with the file name and the sentence number.
 #' @examples 
@@ -32,7 +32,7 @@ extractPairs <- function(x, nerModel, ...)
 #' @title extractPairs.character
 #' @export extractPairs.character
 #' @export
-#' @rdname extract.Pairs
+#' @rdname extractPairs
 extractPairs.character <- function(x, nerModel, ...)
 {
     # create a data.frame listing the files
@@ -49,7 +49,7 @@ extractPairs.character <- function(x, nerModel, ...)
 #' @title extractPairs.tbl
 #' @export extractPairs.tbl
 #' @export
-#' @rdname extract.Pairs
+#' @rdname extractPairs
 #' @importFrom useful moveToFront
 extractPairs.tbl <- function(x, nerModel, ...)
 {
@@ -65,3 +65,48 @@ extractPairs.tbl <- function(x, nerModel, ...)
         # give it a good class
         reclass(value='pairedEntity')
 }
+
+#' @title extractPairs.OrientDB
+#' @export extractPairs.OrientDB
+#' @export
+#' @param class The document DB class from which to query
+#' @rdname extractPairs
+extractPairs.OrientDB <- function(x, nerModel, class, ...)
+{
+    # copy x to db for easier coding
+    db <- x
+    
+    idQuery <- sprintf("SELECT @rid from %s", class)
+    
+    # get a list of IDs
+    IDs <- OrientExpress::query(db, idQuery) %>% httr::content %>% purrr::flatten %>% 
+        purrr::map(function(x) x$rid) %>% purrr::flatten %>% sub(pattern="#", replacement="", x=.)
+    
+    # for now read each ID one at a time
+    # eventually write code to read a few at a time
+    resultList <- lapply(IDs, queryAndExtract, db=db, nerModel=nerModel)
+    
+    # combine into one data_frame
+    resultList %>% purrr::reduce(dplyr::bind_rows)
+}
+
+#' @title queryAndExtract
+#' @description Extracts entities from an OrientDB entry
+#' @details Queries the database and runs the result through \code{extractPairs.tbl}
+#' @author Jared P. Lander
+#' @rdname queryAndExtract
+#' @param ID Record ID to query
+#' @param db An OrientDB connection
+#' @param nerModel A ner model supplied by MITIE
+#' @return A tbl listing entity cooccurences along with the ID and the sentence number.
+queryAndExtract <- function(ID, db, nerModel)
+{
+    # extract text
+    theText <- OrientExpress::query(db, query=sprintf('SELECT FROM %s', ID)) %>% httr::content %>% 
+        purrr::flatten %>% (function(x){ x$result$text}) %>% purrr::keep(function(x) x != "") %>% 
+        paste(collapse=" ")
+    
+    # build a data.frame
+    extractPairs(dplyr::data_frame(File=ID, Text=theText), nerModel)
+}
+
