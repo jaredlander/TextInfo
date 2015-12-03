@@ -11,7 +11,7 @@ extractPairs(x, nerModel, ...)
 
 \method{extractPairs}{character}(x, nerModel, ...)
 
-\method{extractPairs}{tbl}(x, nerModel, ...)
+\method{extractPairs}{tbl}(x, nerModel, toSub, ...)
 
 \method{extractPairs}{OrientDB}(x, nerModel, class, ...)
 }
