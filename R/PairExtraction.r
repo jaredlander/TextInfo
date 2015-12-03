@@ -71,6 +71,9 @@ extractPairs.tbl <- function(x, nerModel, toSub, ...)
 #' @title extractPairs.OrientDB
 #' @export extractPairs.OrientDB
 #' @export
+#' @importFrom httr content
+#' @importFrom purrr flatten map reduce
+#' @importFrom dplyr bind_rows
 #' @param class The document DB class from which to query
 #' @rdname extractPairs
 extractPairs.OrientDB <- function(x, nerModel, class, ...)
@@ -81,15 +84,15 @@ extractPairs.OrientDB <- function(x, nerModel, class, ...)
     idQuery <- sprintf("SELECT @rid from %s", class)
     
     # get a list of IDs
-    IDs <- OrientExpress::query(db, idQuery) %>% httr::content %>% purrr::flatten %>% 
-        purrr::map(function(x) x$rid) %>% purrr::flatten %>% sub(pattern="#", replacement="", x=.)
+    IDs <- OrientExpress::query(db, idQuery) %>% content %>% flatten %>% map(function(x) x$rid) %>% 
+        flatten %>% sub(pattern="#", replacement="", x=.)
     
     # for now read each ID one at a time
     # eventually write code to read a few at a time
     resultList <- lapply(IDs, queryAndExtract, db=db, nerModel=nerModel)
     
     # combine into one data_frame
-    resultList %>% purrr::reduce(dplyr::bind_rows)
+    resultList %>% reduce(bind_rows)
 }
 
 #' @title queryAndExtract
@@ -100,12 +103,14 @@ extractPairs.OrientDB <- function(x, nerModel, class, ...)
 #' @param ID Record ID to query
 #' @param db An OrientDB connection
 #' @param nerModel A ner model supplied by MITIE
+#' @importFrom httr content
+#' @importFrom purrr flatten keep
 #' @return A tbl listing entity cooccurences along with the ID and the sentence number.
 queryAndExtract <- function(ID, db, nerModel)
 {
     # extract text
-    theText <- OrientExpress::query(db, query=sprintf('SELECT FROM %s', ID)) %>% httr::content %>% 
-        purrr::flatten %>% (function(x){ x$result$text}) %>% purrr::keep(function(x) x != "") %>% 
+    theText <- OrientExpress::query(db, query=sprintf('SELECT FROM %s', ID)) %>% content %>% 
+        flatten %>% (function(x){ x$result$text}) %>% keep(function(x) x != "") %>% 
         paste(collapse=" ")
     
     # build a data.frame
