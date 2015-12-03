@@ -38,7 +38,9 @@ extractEntityInfo <- function(entity, tokens, tagNames)
 #' @export extractEntity
 #' @seealso extractEntityInfo
 #' @importFrom dplyr bind_rows
-#' @inheritParams extractEntityInfo
+#' @param entities Entities as found by MITIE
+#' @param tokens The tokens from text as found by MITIE
+#' @param tagNames The possible tags from this MITIE model
 #' @return A tbl holding entity info, one row per each
 #' @examples 
 #' \dontrun{

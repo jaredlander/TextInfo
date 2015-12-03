@@ -9,7 +9,7 @@
 #' @importFrom useful "reclass<-"
 #' @seealso extractSentenceInfo
 #' @param data A tbl created by extractSentenceInfo
-#' @param The name of the column holding entity
+#' @param entity The name of the column holding entity
 #' @return A two-column tbl like a pair list between the entities found together
 #' @examples 
 #' \dontrun{

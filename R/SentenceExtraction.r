@@ -7,7 +7,7 @@
 #' @author Jared P. Lander
 #' @import MITIE
 #' @param sentence A sentence of text
-#' @param A ner model supplied by MITIE
+#' @param nerModel A ner model supplied by MITIE
 #' @return A tbl with one row per entity found in the sentence
 #' @examples 
 #' \dontrun{
