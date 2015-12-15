@@ -50,6 +50,7 @@ extractPairs.character <- function(x, nerModel, ...)
 #' @export extractPairs.tbl
 #' @export
 #' @rdname extractPairs
+#' @param toSub Named vector where the elements are the pattern and the names are the replacement values
 #' @importFrom useful moveToFront subVector
 extractPairs.tbl <- function(x, nerModel, toSub, ...)
 {

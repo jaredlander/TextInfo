@@ -20,6 +20,8 @@ extractPairs(x, nerModel, ...)
 
 \item{nerModel}{A ner model supplied by MITIE}
 
+\item{toSub}{Named vector where the elements are the pattern and the names are the replacement values}
+
 \item{id}{List of IDs to read, if \code{NULL} it pulls every record}
 
 \item{class}{The document DB class from which to query}
