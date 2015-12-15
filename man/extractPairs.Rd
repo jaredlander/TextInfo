@@ -13,12 +13,14 @@ extractPairs(x, nerModel, ...)
 
 \method{extractPairs}{tbl}(x, nerModel, toSub, ...)
 
-\method{extractPairs}{OrientDB}(x, nerModel, class, ...)
+\method{extractPairs}{OrientDB}(x, id = NULL, nerModel, class, ...)
 }
 \arguments{
 \item{x}{Either a character vector with names of files or a tbl or database source holding the text.  In the latter cases the text is assumed to be in a column named Text and the grouping variable is assumed to be named File.}
 
 \item{nerModel}{A ner model supplied by MITIE}
+
+\item{id}{List of IDs to read, if \code{NULL} it pulls every record}
 
 \item{class}{The document DB class from which to query}
 

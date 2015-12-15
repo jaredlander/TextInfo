@@ -75,8 +75,9 @@ extractPairs.tbl <- function(x, nerModel, toSub, ...)
 #' @importFrom purrr flatten map reduce
 #' @importFrom dplyr bind_rows
 #' @param class The document DB class from which to query
+#' @param id List of IDs to read, if \code{NULL} it pulls every record
 #' @rdname extractPairs
-extractPairs.OrientDB <- function(x, nerModel, class, ...)
+extractPairs.OrientDB <- function(x, id=NULL, nerModel, class, ...)
 {
     # copy x to db for easier coding
     db <- x
@@ -84,8 +85,11 @@ extractPairs.OrientDB <- function(x, nerModel, class, ...)
     idQuery <- sprintf("SELECT @rid from %s", class)
     
     # get a list of IDs
-    IDs <- OrientExpress::query(db, idQuery) %>% content %>% flatten %>% map(function(x) x$rid) %>% 
-        flatten %>% sub(pattern="#", replacement="", x=.)
+    if(is.null(id))
+    {
+        IDs <- OrientExpress::query(db, idQuery) %>% content %>% flatten %>% map(function(x) x$rid) %>% 
+            flatten %>% sub(pattern="#", replacement="", x=.)
+    }
     
     # for now read each ID one at a time
     # eventually write code to read a few at a time
