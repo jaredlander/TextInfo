@@ -14,7 +14,8 @@ Imports:
     qdaplite,
     OrientExpress,
     httr,
-    purrr
+    purrr,
+    stringr
 Maintainer: Jared P. Lander <packages@jaredlander.com>
 Description: Functions for extracting information from text and storing in an
     edgelist format.

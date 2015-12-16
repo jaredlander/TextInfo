@@ -11,9 +11,10 @@ extractPairs(x, nerModel, ...)
 
 \method{extractPairs}{character}(x, nerModel, ...)
 
-\method{extractPairs}{tbl}(x, nerModel, toSub, ...)
+\method{extractPairs}{tbl}(x, nerModel, toSub = NULL, requiredTerms = NULL,
+  ignore.case = TRUE, ...)
 
-\method{extractPairs}{OrientDB}(x, id = NULL, nerModel, class, ...)
+\method{extractPairs}{OrientDB}(x, nerModel, id = NULL, class, ...)
 }
 \arguments{
 \item{x}{Either a character vector with names of files or a tbl or database source holding the text.  In the latter cases the text is assumed to be in a column named Text and the grouping variable is assumed to be named File.}
@@ -21,6 +22,10 @@ extractPairs(x, nerModel, ...)
 \item{nerModel}{A ner model supplied by MITIE}
 
 \item{toSub}{Named vector where the elements are the pattern and the names are the replacement values}
+
+\item{requiredTerms}{A vector of terms that must be extracted if they exist}
+
+\item{ignore.case}{Logical indicating if requiredTerms is not case sensitive}
 
 \item{id}{List of IDs to read, if \code{NULL} it pulls every record}
 

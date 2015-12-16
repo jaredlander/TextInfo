@@ -51,16 +51,19 @@ extractPairs.character <- function(x, nerModel, ...)
 #' @export
 #' @rdname extractPairs
 #' @param toSub Named vector where the elements are the pattern and the names are the replacement values
+#' @param requiredTerms A vector of terms that must be extracted if they exist
+#' @param ignore.case Logical indicating if requiredTerms is not case sensitive
 #' @importFrom useful moveToFront subVector
-extractPairs.tbl <- function(x, nerModel, toSub, ...)
+extractPairs.tbl <- function(x, nerModel, toSub=NULL, requiredTerms=NULL, ignore.case=TRUE, ...)
 {
+    dots <- 
     x %>% 
         # group by the file
         group_by(File) %>% 
         # replace special characters with their alternate meanings
         mutate(Text=subVector(Text, toSub=toSub)) %>%
         # do the pair extraction for each sentence in each file
-        do(extractTextInfo(text=., nerModel=nerModel)) %>%
+        do(extractTextInfo(text=., nerModel=nerModel, requiredTerms=requiredTerms, ignore.case=ignore.case)) %>%
         # rename Number to SentenceNumber
         rename(SentenceNumber=Number) %>%
         # reorder the columns
@@ -78,7 +81,7 @@ extractPairs.tbl <- function(x, nerModel, toSub, ...)
 #' @param class The document DB class from which to query
 #' @param id List of IDs to read, if \code{NULL} it pulls every record
 #' @rdname extractPairs
-extractPairs.OrientDB <- function(x, id=NULL, nerModel, class, ...)
+extractPairs.OrientDB <- function(x, nerModel, id=NULL, class, ...)
 {
     # copy x to db for easier coding
     db <- x
@@ -88,13 +91,13 @@ extractPairs.OrientDB <- function(x, id=NULL, nerModel, class, ...)
     # get a list of IDs
     if(is.null(id))
     {
-        IDs <- OrientExpress::query(db, idQuery) %>% content %>% flatten %>% map(function(x) x$rid) %>% 
+        id <- OrientExpress::query(db, idQuery) %>% content %>% flatten %>% map(function(x) x$rid) %>% 
             flatten %>% sub(pattern="#", replacement="", x=.)
     }
     
     # for now read each ID one at a time
     # eventually write code to read a few at a time
-    resultList <- lapply(IDs, queryAndExtract, db=db, nerModel=nerModel)
+    resultList <- lapply(id, queryAndExtract, db=db, nerModel=nerModel, ...)
     
     # combine into one data_frame
     resultList %>% reduce(bind_rows)
@@ -108,10 +111,11 @@ extractPairs.OrientDB <- function(x, id=NULL, nerModel, class, ...)
 #' @param ID Record ID to query
 #' @param db An OrientDB connection
 #' @param nerModel A ner model supplied by MITIE
+#' @param \dots Further arguments
 #' @importFrom httr content
 #' @importFrom purrr flatten keep
 #' @return A tbl listing entity cooccurences along with the ID and the sentence number.
-queryAndExtract <- function(ID, db, nerModel)
+queryAndExtract <- function(ID, db, nerModel, ...)
 {
     # extract text
     theText <- OrientExpress::query(db, query=sprintf('SELECT FROM %s', ID)) %>% content %>% 
@@ -119,6 +123,6 @@ queryAndExtract <- function(ID, db, nerModel)
         paste(collapse=" ")
     
     # build a data.frame
-    extractPairs(dplyr::data_frame(File=ID, Text=theText), nerModel)
+    extractPairs(dplyr::data_frame(File=ID, Text=theText), nerModel, ...)
 }
 

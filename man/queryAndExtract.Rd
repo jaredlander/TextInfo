@@ -4,7 +4,7 @@
 \alias{queryAndExtract}
 \title{queryAndExtract}
 \usage{
-queryAndExtract(ID, db, nerModel)
+queryAndExtract(ID, db, nerModel, ...)
 }
 \arguments{
 \item{ID}{Record ID to query}
@@ -12,6 +12,8 @@ queryAndExtract(ID, db, nerModel)
 \item{db}{An OrientDB connection}
 
 \item{nerModel}{A ner model supplied by MITIE}
+
+\item{\dots}{Further arguments}
 }
 \value{
 A tbl listing entity cooccurences along with the ID and the sentence number.

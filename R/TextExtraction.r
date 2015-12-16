@@ -9,6 +9,8 @@
 #' @importFrom useful "reclass<-"
 #' @param text A vector of text
 #' @param nerModel A ner model supplied by MITIE
+#' @param requiredTerms A vector of terms that must be extracted if they exist
+#' @param ignore.case Logical indicating if requiredTerms is not case sensitive
 #' @return A tbl of entity pairs demarcated by the sentence they are paired in.  Could result in multiple combinations.
 #' @examples 
 #' \dontrun{
@@ -20,9 +22,10 @@
 #' "The dollar figures could not be independently verified, and none of the groups will need to file campaign disclosures with the Federal Election Commission until July. But an outside spending campaign of that size, combined with Mr. Cruz's demonstrated ability to pull in dollars from small donors, would substantially offset Mr. Cruz's difficulties in building a traditional network of regular large donors and volunteer fund-raisers, known as bundlers.",
 #' "The size of the contributions is likely to force backers of other candidates to rethink their budgets for the primary season; other super PACs lining up behind Republican candidates had planned to raise $20 million to $30 million over the course of the entire primary campaign.")
 #' extractTextInfo(thisText, nerModel=ner)
+#' extractTextInfo(thisText, nerModel=ner, requiredTerms=c('dollar'))
 #' }
 #' 
-extractTextInfo <- function(text, nerModel)
+extractTextInfo <- function(text, nerModel, requiredTerms=NULL, ignore.case=TRUE)
 {
     # for one file split into sentences
     sentences <- getSentencesFromText(text)
@@ -32,7 +35,11 @@ extractTextInfo <- function(text, nerModel)
         # for each sentence
         group_by(Number) %>% 
         # extract entities mentioned
-        do(extractSentenceInfo(.$Sentence, nerModel=nerModel)) %>% 
+        do(extractSentenceInfo(.$Sentence, nerModel=nerModel, requiredTerms=requiredTerms, ignore.case=ignore.case)) %>% 
+        # group this by entity and get counts
+        # group_by(Entity) %>% 
+        # summarize(Count=n()) %>% 
+        # ungroup %>% 
         # create edgelist of mentioned entities
         do(pairEntities(.)) %>%
         # make it a pairedEntity class

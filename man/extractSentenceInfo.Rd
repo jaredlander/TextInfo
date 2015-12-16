@@ -4,12 +4,17 @@
 \alias{extractSentenceInfo}
 \title{extractSentenceInfo}
 \usage{
-extractSentenceInfo(sentence, nerModel)
+extractSentenceInfo(sentence, nerModel, requiredTerms = NULL,
+  ignore.case = TRUE)
 }
 \arguments{
 \item{sentence}{A sentence of text}
 
 \item{nerModel}{A ner model supplied by MITIE}
+
+\item{requiredTerms}{A vector of terms that must be extracted if they exist}
+
+\item{ignore.case}{Logical indicating if requiredTerms is not case sensitive}
 }
 \value{
 A tbl with one row per entity found in the sentence
@@ -26,6 +31,7 @@ ner_model_path <- "tests/data/ner_model.dat"
 ner <- NamedEntityExtractor$new(ner_model_path)
 theText <- "A network of new super PACs said Wednesday that it had raised $31 million to support Senator Ted Cruz's presidential campaign, a sum that could upend expectations in the race for the Republican nomination and rewrite the political rule book for outside spending"
 extractSentenceInfo(theText, nerModel=ner)
+extractSentenceInfo(theText, nerModel=ner, requiredTerms=c('network'))
 }
 
 }
