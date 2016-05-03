@@ -97,17 +97,17 @@ extractPairs.OrientDB <- function(x, nerModel, id=NULL, class, ...)
     
     # for now read each ID one at a time
     # eventually write code to read a few at a time
-    resultList <- lapply(id, queryAndExtract, db=db, nerModel=nerModel, ...)
+    resultList <- lapply(id, queryAndExtract.OrientDB, db=db, nerModel=nerModel, ...)
     
     # combine into one data_frame
     resultList %>% reduce(bind_rows)
 }
 
-#' @title queryAndExtract
+#' @title queryAndExtract.OrientDB
 #' @description Extracts entities from an OrientDB entry
 #' @details Queries the database and runs the result through \code{extractPairs.tbl}
 #' @author Jared P. Lander
-#' @rdname queryAndExtract
+#' @rdname queryAndExtract.OrientDB
 #' @param ID Record ID to query
 #' @param db An OrientDB connection
 #' @param nerModel A ner model supplied by MITIE
@@ -115,7 +115,7 @@ extractPairs.OrientDB <- function(x, nerModel, id=NULL, class, ...)
 #' @importFrom httr content
 #' @importFrom purrr flatten keep
 #' @return A tbl listing entity cooccurences along with the ID and the sentence number.
-queryAndExtract <- function(ID, db, nerModel, ...)
+queryAndExtract.OrientDB <- function(ID, db, nerModel, ...)
 {
     # extract text
     theText <- OrientExpress::query(db, query=sprintf('SELECT FROM %s', ID)) %>% content %>% 
@@ -126,3 +126,33 @@ queryAndExtract <- function(ID, db, nerModel, ...)
     extractPairs(dplyr::data_frame(File=ID, Text=theText), nerModel, ...)
 }
 
+#' @title extractPairs.OrientDB
+#' @export extractPairs.OrientDB
+#' @export
+#' @importFrom httr content
+#' @importFrom purrr flatten map reduce
+#' @importFrom dplyr bind_rows
+#' @param class The document DB class from which to query
+#' @param id List of IDs to read, if \code{NULL} it pulls every record
+#' @rdname extractPairs
+extractPairs.es_conn <- function(x, nerModel, id=NULL, class, ...)
+{
+    # copy x to db for easier coding
+    db <- x
+    
+    idQuery <- sprintf("SELECT @rid from %s", class)
+    
+    # get a list of IDs
+    if(is.null(id))
+    {
+        id <- OrientExpress::query(db, idQuery) %>% content %>% flatten %>% map(function(x) x$rid) %>% 
+            flatten %>% sub(pattern="#", replacement="", x=.)
+    }
+    
+    # for now read each ID one at a time
+    # eventually write code to read a few at a time
+    resultList <- lapply(id, queryAndExtract.OrientDB, db=db, nerModel=nerModel, ...)
+    
+    # combine into one data_frame
+    resultList %>% reduce(bind_rows)
+}
