@@ -135,24 +135,108 @@ queryAndExtract.OrientDB <- function(ID, db, nerModel, ...)
 #' @param class The document DB class from which to query
 #' @param id List of IDs to read, if \code{NULL} it pulls every record
 #' @rdname extractPairs
-extractPairs.es_conn <- function(x, nerModel, id=NULL, class, ...)
+extractPairs.es_conn <- function(x, nerModel, index=NULL, type=NULL, id=NULL, q=NULL, 
+                                 search=c('search', 'scroll', 'page'), scrollHold="5m", size=10, ...)
 {
-    # copy x to db for easier coding
-    db <- x
+    # are we scrolling or searching
+    search <- match.arg(search)
     
-    idQuery <- sprintf("SELECT @rid from %s", class)
+    size <- as.character(size)
     
-    # get a list of IDs
-    if(is.null(id))
+    if(search == 'search')
     {
-        id <- OrientExpress::query(db, idQuery) %>% content %>% flatten %>% map(function(x) x$rid) %>% 
-            flatten %>% sub(pattern="#", replacement="", x=.)
+        ## call search function
+        answer <- dbSearch(x, index=index, type=type, id=id, q=q, size=size)
+        
+    } else if(search == 'scroll')
+    {
+        ## call scroll function
+        answer <- dbScroll.es_conn(x, index=index, scrollHold=scrollHold, size=size)
+    } else if(search == 'page')
+    {
+        ## call page function
     }
     
-    # for now read each ID one at a time
-    # eventually write code to read a few at a time
-    resultList <- lapply(id, queryAndExtract.OrientDB, db=db, nerModel=nerModel, ...)
+   return(answer)
+}
+
+dbSearch <- function(db, ...)
+{
+    UseMethod('dbSearch')
+}
+
+dbSearch.es_conn <- function(db, index=NULL, type=NULL, id=NULL, q=NULL, size=10, nerModel, ...)
+{
+    size <- as.character(size)
     
-    # combine into one data_frame
-    resultList %>% reduce(bind_rows)
+    # query data
+    theSearch <- elastic::Search(index=index, type=type, id=id, q=q, size=size)
+    # form into a data_frame
+    theData <- elasticToTbl(theSearch)
+    extractPairs.tbl(x=theData, nerModel=nerModel, ...)
+}
+
+elasticToTbl <- function(data, group='filename', text='content')
+{
+    data %>% 
+        purrr::map_df(function(x) dplyr::data_frame(File=x$`_source`[[group]], Text=x$`_source`[[text]]))
+}
+
+dbScroll <- function(db, ...)
+{
+    UseMethod('dbScroll')
+}
+
+dbScroll.es_conn <- function(db, index=NULL, scrollHold="5m", size=10, nerModel, ...)
+{
+    # make size a character
+    size <- as.character(size)
+    
+    # do first search to initiate a scroll
+    firstSearch <- elastic::Search(index=index, scroll=scrollHold, search_type = "scan", size=size)
+    
+    ## figure number of iterations
+    # get number of results returned
+    numResults <- size*firstSearch$`_shards`$total
+    # num iterations is total/numResults, rounded up
+    numIter <- ceiling(firstSearch$hits$total/numResults)
+    
+    ## build empty list to hold results
+    results <- vector(mode='logical', length=numIter)
+    
+    ## iterate through the results, writing to the list
+    hits <- 1
+    iter <- 1
+    while(hits != 0){
+        res <- elastic::scroll(scroll_id=firstSearch$`_scroll_id`)
+        hits <- length(res$hits$hits)
+        if(hits > 0)
+        {
+            theData <- elasticToTbl(res)
+            results[[i]] <- extractPairs.tbl(x=theData, nerModel=nerModel, ...)
+        }
+        
+        iter <- iter + 1
+    }
+    
+    # make into a tbl and return
+    dplyr::bind_rows(results)
+}
+
+dbPage <- function(db, ...)
+{
+    UseMethod('dbPage')
+}
+
+dbPage.es_conn <- function(db, index=NULL, size="10", ...)
+{
+    # convert size to character
+    size <- as.character(size)
+    
+    # do first search to get number of items
+    firstSearch <- elastic::Search(index=index, size="1")
+    # get number of items
+    hits <- firstSearch$hits$total
+    
+    # get set of pages
 }
