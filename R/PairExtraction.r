@@ -244,10 +244,10 @@ dbScroll <- function(db, nerModel, ...)
 dbScroll.es_conn <- function(db, nerModel, index=NULL, scrollHold="5m", size=10, ...)
 {
     # make size a character
-    size <- as.character(size)
+    #size <- as.character(size)
     
     # do first search to initiate a scroll
-    firstSearch <- elastic::Search(index=index, scroll=scrollHold, search_type = "scan", size=size)
+    firstSearch <- elastic::Search(index=index, scroll=scrollHold, search_type = "scan", size=as.character(size))
     
     ## figure number of iterations
     # get number of results returned
