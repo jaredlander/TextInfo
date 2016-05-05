@@ -30,6 +30,12 @@ extractTextInfo <- function(text, nerModel, requiredTerms=NULL, ignore.case=TRUE
     # for one file split into sentences
     sentences <- getSentencesFromText(text)
     
+    # if nerModel is a path build the ner entity
+    # if(is.character(nerModel))
+    # {
+    #     nerModel <- MITIE::NamedEntityExtractor$new(nerModel)
+    # }
+    
     # get paired entities
     sentences %>% 
         # for each sentence

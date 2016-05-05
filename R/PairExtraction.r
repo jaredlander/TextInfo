@@ -153,7 +153,7 @@ extractPairs.es_conn <- function(x, nerModel, index=NULL, type=NULL, id=NULL, q=
     } else if(search == 'scroll')
     {
         ## call scroll function
-        answer <- dbScroll.es_conn(x, index=index, scrollHold=scrollHold, size=size)
+        answer <- dbScroll.es_conn(x, nerModel=nerModel, index=index, scrollHold=scrollHold, size=size)
     } else if(search == 'page')
     {
         ## call page function
@@ -212,7 +212,7 @@ dbSearch.es_conn <- function(db, nerModel, index=NULL, type=NULL, id=NULL, q=NUL
 #' 
 elasticToTbl <- function(data, group='filename', text='content')
 {
-    data %>% 
+    data$hits$hits %>% 
         purrr::map_df(function(x) dplyr::data_frame(File=x$`_source`[[group]], Text=x$`_source`[[text]]))
 }
 
@@ -256,7 +256,7 @@ dbScroll.es_conn <- function(db, nerModel, index=NULL, scrollHold="5m", size=10,
     numIter <- ceiling(firstSearch$hits$total/numResults)
     
     ## build empty list to hold results
-    results <- vector(mode='logical', length=numIter)
+    results <- vector(mode='list', length=numIter)
     
     ## iterate through the results, writing to the list
     hits <- 1
@@ -267,7 +267,7 @@ dbScroll.es_conn <- function(db, nerModel, index=NULL, scrollHold="5m", size=10,
         if(hits > 0)
         {
             theData <- elasticToTbl(res)
-            results[[i]] <- extractPairs.tbl(x=theData, nerModel=nerModel, ...)
+            results[[iter]] <- extractPairs.tbl(x=theData, nerModel=nerModel, ...)
         }
         
         iter <- iter + 1
