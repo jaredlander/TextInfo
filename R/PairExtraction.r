@@ -126,14 +126,16 @@ queryAndExtract.OrientDB <- function(ID, db, nerModel, ...)
     extractPairs(dplyr::data_frame(File=ID, Text=theText), nerModel, ...)
 }
 
-#' @title extractPairs.OrientDB
-#' @export extractPairs.OrientDB
+#' @title extractPairs.es_conn
+#' @export extractPairs.es_conn
 #' @export
-#' @importFrom httr content
-#' @importFrom purrr flatten map reduce
-#' @importFrom dplyr bind_rows
-#' @param class The document DB class from which to query
-#' @param id List of IDs to read, if \code{NULL} it pulls every record
+#' @param index Document index
+#' @param type Type of document
+## @param id ID to search
+#' @param q Search query
+#' @param search Type of search: search, scroll or page
+#' @param scrollHold Time to hold open scroll state
+#' @param size Size of entry per shard
 #' @rdname extractPairs
 extractPairs.es_conn <- function(x, nerModel, index=NULL, type=NULL, id=NULL, q=NULL, 
                                  search=c('search', 'scroll', 'page'), scrollHold="5m", size=10, ...)
@@ -155,17 +157,39 @@ extractPairs.es_conn <- function(x, nerModel, index=NULL, type=NULL, id=NULL, q=
     } else if(search == 'page')
     {
         ## call page function
+        stop('paging not available yet')
     }
     
    return(answer)
 }
 
-dbSearch <- function(db, ...)
+#' @title dbSearch
+#' @description Elastic search function
+#' @details Searches elasticsearch and forms edgelsist of paired entities
+#' @rdname dbSearch
+#' @export dbSearch
+#' @author Jared P. Lander
+#' @param db database connection
+#' @param nerModel A ner model supplied by MITIE
+#' @param \dots Further arguments
+#' @return Edgelist of paired entities
+dbSearch <- function(db, nerModel, ...)
 {
     UseMethod('dbSearch')
 }
 
-dbSearch.es_conn <- function(db, index=NULL, type=NULL, id=NULL, q=NULL, size=10, nerModel, ...)
+#' @title dbSearch.es_conn
+#' @author Jared P. Lander
+#' @rdname dbSearch
+#' @export dbSearch.es_conn
+#' @export
+#' @param index Document index
+#' @param type Type of document
+#' @param id ID to search
+#' @param q Search query
+#' @param size Size of results returned from each shard
+#' 
+dbSearch.es_conn <- function(db, nerModel, index=NULL, type=NULL, id=NULL, q=NULL, size=10, ...)
 {
     size <- as.character(size)
     
@@ -176,18 +200,48 @@ dbSearch.es_conn <- function(db, index=NULL, type=NULL, id=NULL, q=NULL, size=10
     extractPairs.tbl(x=theData, nerModel=nerModel, ...)
 }
 
+#' @title elasticToTbl
+#' @description Converts a list of elastic hits into a tbl
+#' @details Iterates over a list of results and returns the grouping variable and text (content) variable
+#' @author Jared P. Lander
+#' @export elasticToTbl
+#' @rdname elasticToTbl
+#' @param data Result from calling an ES search
+#' @param group Name of grouping variable
+#' @param text Name of text/content variable
+#' 
 elasticToTbl <- function(data, group='filename', text='content')
 {
     data %>% 
         purrr::map_df(function(x) dplyr::data_frame(File=x$`_source`[[group]], Text=x$`_source`[[text]]))
 }
 
-dbScroll <- function(db, ...)
+
+#' @title dbScroll
+#' @description Elastic search function
+#' @details Searches elasticsearch and forms edgelsist of paired entities
+#' @rdname dbScroll
+#' @export dbScroll
+#' @author Jared P. Lander
+#' @param db database connection
+#' @param nerModel A ner model supplied by MITIE
+#' @param \dots Further arguments
+#' @return Edgelist of paired entities
+dbScroll <- function(db, nerModel, ...)
 {
     UseMethod('dbScroll')
 }
 
-dbScroll.es_conn <- function(db, index=NULL, scrollHold="5m", size=10, nerModel, ...)
+#' @title dbScroll.es_conn
+#' @author Jared P. Lander
+#' @rdname dbSroll
+#' @export dbScroll.es_conn
+#' @export
+#' @param index Document index
+#' @param scrollHold Time to hold open scroll state
+#' @param size Size of entry per shard
+#' 
+dbScroll.es_conn <- function(db, nerModel, index=NULL, scrollHold="5m", size=10, ...)
 {
     # make size a character
     size <- as.character(size)
@@ -223,20 +277,20 @@ dbScroll.es_conn <- function(db, index=NULL, scrollHold="5m", size=10, nerModel,
     dplyr::bind_rows(results)
 }
 
-dbPage <- function(db, ...)
-{
-    UseMethod('dbPage')
-}
-
-dbPage.es_conn <- function(db, index=NULL, size="10", ...)
-{
-    # convert size to character
-    size <- as.character(size)
-    
-    # do first search to get number of items
-    firstSearch <- elastic::Search(index=index, size="1")
-    # get number of items
-    hits <- firstSearch$hits$total
-    
-    # get set of pages
-}
+# dbPage <- function(db, ...)
+# {
+#     UseMethod('dbPage')
+# }
+# 
+# dbPage.es_conn <- function(db, index=NULL, size="10", ...)
+# {
+#     # convert size to character
+#     size <- as.character(size)
+#     
+#     # do first search to get number of items
+#     firstSearch <- elastic::Search(index=index, size="1")
+#     # get number of items
+#     hits <- firstSearch$hits$total
+#     
+#     # get set of pages
+# }

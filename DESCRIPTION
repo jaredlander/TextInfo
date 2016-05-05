@@ -4,9 +4,9 @@ Title: Functions for extracting information from text
 Version: 1.0.0
 Date: 2015-04-12
 Author: Jared P. Lander
-Depends: 
+Depends:
     MITIE
-Imports: 
+Imports:
     dplyr,
     magrittr,
     useful,
@@ -15,7 +15,8 @@ Imports:
     OrientExpress,
     httr,
     purrr,
-    stringr
+    stringr,
+    elastic
 Maintainer: Jared P. Lander <packages@jaredlander.com>
 Description: Functions for extracting information from text and storing in an
     edgelist format.
@@ -23,6 +24,6 @@ License: BSD_3_clause + file LICENSE
 LazyLoad: yes
 ByteCompile: TRUE
 Packaged: 2015-03-25 05:16:05 UTC; Jared
-Suggests: 
+Suggests:
     testthat
 RoxygenNote: 5.0.1

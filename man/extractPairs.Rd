@@ -4,6 +4,7 @@
 \alias{extractPairs}
 \alias{extractPairs.OrientDB}
 \alias{extractPairs.character}
+\alias{extractPairs.es_conn}
 \alias{extractPairs.tbl}
 \title{extractPairs}
 \usage{
@@ -15,6 +16,10 @@ extractPairs(x, nerModel, ...)
   ignore.case = TRUE, ...)
 
 \method{extractPairs}{OrientDB}(x, nerModel, id = NULL, class, ...)
+
+\method{extractPairs}{es_conn}(x, nerModel, index = NULL, type = NULL,
+  id = NULL, q = NULL, search = c("search", "scroll", "page"),
+  scrollHold = "5m", size = 10, ...)
 }
 \arguments{
 \item{x}{Either a character vector with names of files or a tbl or database source holding the text.  In the latter cases the text is assumed to be in a column named Text and the grouping variable is assumed to be named File.}
@@ -31,7 +36,21 @@ extractPairs(x, nerModel, ...)
 
 \item{class}{The document DB class from which to query}
 
+\item{index}{Document index}
+
+\item{type}{Type of document}
+
+\item{q}{Search query}
+
+\item{search}{Type of search: search, scroll or page}
+
+\item{scrollHold}{Time to hold open scroll state}
+
+\item{size}{Size of entry per shard}
+
 \item{\dots}{Further arguments}
+
+\item{id}{ID to search}
 }
 \value{
 A tbl listing entity cooccurences along with the file name and the sentence number.
