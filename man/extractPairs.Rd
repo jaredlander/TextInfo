@@ -49,8 +49,6 @@ extractPairs(x, nerModel, ...)
 \item{size}{Size of entry per shard}
 
 \item{\dots}{Further arguments}
-
-\item{id}{ID to search}
 }
 \value{
 A tbl listing entity cooccurences along with the file name and the sentence number.

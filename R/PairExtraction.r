@@ -153,7 +153,7 @@ extractPairs.es_conn <- function(x, nerModel, index=NULL, type=NULL, id=NULL, q=
     } else if(search == 'scroll')
     {
         ## call scroll function
-        answer <- dbScroll.es_conn(x, nerModel=nerModel, index=index, scrollHold=scrollHold, size=size)
+        answer <- dbScroll.es_conn(x, nerModel=nerModel, index=index, q=q, scrollHold=scrollHold, size=size)
     } else if(search == 'page')
     {
         ## call page function
@@ -234,43 +234,59 @@ dbScroll <- function(db, nerModel, ...)
 
 #' @title dbScroll.es_conn
 #' @author Jared P. Lander
-#' @rdname dbSroll
+#' @rdname dbScroll
 #' @export dbScroll.es_conn
 #' @export
 #' @param index Document index
+#' @param q Search query
 #' @param scrollHold Time to hold open scroll state
 #' @param size Size of entry per shard
+#' @param maxNull Maximum number of blank returns
 #' 
-dbScroll.es_conn <- function(db, nerModel, index=NULL, scrollHold="5m", size=10, ...)
+dbScroll.es_conn <- function(db, nerModel, index=NULL, q=NULL, scrollHold="5m", size=10, maxNull=5, ...)
 {
     # make size a character
     size <- as.character(size)
     
     # do first search to initiate a scroll
-    firstSearch <- elastic::Search(index=index, scroll=scrollHold, search_type = "scan", size=size)
+    res <- elastic::Search(index=index, scroll=scrollHold, search_type = "scan", size=size, q=q)
     
     ## figure number of iterations
     # get number of results returned
-    numResults <- as.numeric(size)*firstSearch$`_shards`$total
+    numResults <- as.numeric(size)*res$`_shards`$total
     # num iterations is total/numResults, rounded up
-    numIter <- ceiling(firstSearch$hits$total/numResults)
+    numIter <- ceiling(res$hits$total/numResults)
     
     ## build empty list to hold results
     results <- vector(mode='list', length=numIter)
     
     ## iterate through the results, writing to the list
-    hits <- 1
+    hits <- totalHits <- res$hits$total
     iter <- 1
-    while(hits != 0){
-        res <- elastic::scroll(scroll_id=firstSearch$`_scroll_id`)
-        hits <- length(res$hits$hits)
-        if(hits > 0)
+    nullCounter <- 0
+    while(totalHits > 0){
+        
+        # if too many NULLs, quit
+        if(nullCounter > maxNull)
+            break
+        
+        res <- tryCatch(elastic::scroll(scroll_id=res$`_scroll_id`), error=function(e) NULL)
+        
+        if(is.null(res))
+        {
+            nullCounter <- nullCounter + 1
+            next
+        }
+        
+        thisLength <- length(res$hits$hits)
+        if(thisLength > 0)
         {
             theData <- elasticToTbl(res)
             results[[iter]] <- extractPairs.tbl(x=theData, nerModel=nerModel, ...)
         }
         
         iter <- iter + 1
+        totalHits <- totalHits - thisLength
     }
     
     # make into a tbl and return
